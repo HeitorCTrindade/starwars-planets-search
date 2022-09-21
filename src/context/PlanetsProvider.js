@@ -4,11 +4,15 @@ import PlanetsContext from './PlanetsContext';
 
 function PlanetsProvider(props) {
   const { children } = props;
-  const [planets, setPlanets] = useState([]);
+  const [planets, setPlanets] = useState([{}]);
+  const [filterByName, setName] = useState({ name: '' });
+  const [filterByNumericValues, setNumericFilter] = useState([{}]);
+  const [isLoading, setIsLoading] = useState(false);
   const endpoint = 'https://swapi.dev/api/planets';
 
   useEffect(() => {
     const getDataFromAPI = async () => {
+      setIsLoading(true);
       const { results } = await fetch(endpoint).then((response) => response.json());
       // based on the lesson from https://masteringjs.io/tutorials/fundamentals/filter-object
       const filteredResults = results.map((planet) => {
@@ -17,12 +21,30 @@ function PlanetsProvider(props) {
         return Object.fromEntries(filteredPlanetArray);
       });
       setPlanets(filteredResults);
+      setIsLoading(false);
     };
     getDataFromAPI();
   }, []);
 
+  const setFilterByName = (name) => {
+    setName(name);
+  };
+
+  const setNumericFilters = (numericFilterj) => {
+    setNumericFilter([...filterByNumericValues, numericFilterj]);
+  };
+
   return (
-    <PlanetsContext.Provider value={ { planets } }>
+    <PlanetsContext.Provider
+      value={ {
+        planets,
+        isLoading,
+        setFilterByName,
+        filterByName,
+        setNumericFilters,
+        filterByNumericValues,
+      } }
+    >
       { children }
     </PlanetsContext.Provider>
   );
