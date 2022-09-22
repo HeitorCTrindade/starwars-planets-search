@@ -4,10 +4,10 @@ import PlanetsContext from './PlanetsContext';
 
 function PlanetsProvider(props) {
   const { children } = props;
-  const [planets, setPlanets] = useState([{}]);
+  const [planets, setPlanets] = useState([]);
   const [filterByName, setName] = useState({ name: '' });
-  const [filterByNumericValues, setNumericFilter] = useState([{}]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [filterByNumericValues, setNumericFilter] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const endpoint = 'https://swapi.dev/api/planets';
 
   useEffect(() => {
