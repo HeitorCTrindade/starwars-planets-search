@@ -2,6 +2,14 @@ import React, { useContext, useState, useEffect } from 'react';
 import Table from '../components/Table';
 import PlanetsContext from '../context/PlanetsContext';
 
+const selectComparisonFilterArray = [
+  'population',
+  'orbital_period',
+  'diameter',
+  'rotation_period',
+  'surface_water',
+];
+
 function MainPage() {
   const {
     planets,
@@ -90,7 +98,6 @@ function MainPage() {
         setFilterPlanets(planets);
       }
       if (filterByNumericValues.length > 0) {
-        console.log('entrou');
         filterByNumericValues.forEach(({ column, comparison, value }) => {
           filterByValues(column, comparison, value);
         });
@@ -98,6 +105,23 @@ function MainPage() {
     };
     filterPlanetsByAllFilters();
   }, [filterByNumericValues, filterByName]);
+
+  const createOptionsElements = () => {
+    let filteredSelectComparisonFilterArray = [];
+    if (filterByNumericValues.length > 0) {
+      console.log('entrou');
+      filteredSelectComparisonFilterArray = selectComparisonFilterArray
+        .filter((option) => filterByNumericValues
+          .find((filter) => option !== filter.column));
+    } else {
+      filteredSelectComparisonFilterArray = selectComparisonFilterArray;
+    }
+    return (
+      filteredSelectComparisonFilterArray.map((option) => (
+        <option value={ option } key={ option }>{option}</option>
+      ))
+    );
+  };
 
   return (
     <div>
@@ -117,11 +141,7 @@ function MainPage() {
               // value={ formState.column }
               onChange={ () => {} }
             >
-              <option value="population">population</option>
-              <option value="orbital_period">orbital_period</option>
-              <option value="diameter">diameter</option>
-              <option value="rotation_period">rotation_period</option>
-              <option value="surface_water">surface_water</option>
+              { createOptionsElements() }
             </select>
 
             <select
