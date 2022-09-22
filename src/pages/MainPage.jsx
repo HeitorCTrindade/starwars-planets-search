@@ -67,15 +67,10 @@ function MainPage() {
   };
 
   useEffect(() => {
-    let arrayToFilter = [];
+    let newfilterPlanets;
 
-    if (filterPlanets.length > 0) {
-      arrayToFilter = filterPlanets;
-    } else {
-      arrayToFilter = planets;
-    }
     const filterByValues = (column, comparison, value) => {
-      const newfilterPlanets = arrayToFilter.filter((planet) => {
+      newfilterPlanets = newfilterPlanets.filter((planet) => {
         switch (comparison) {
         case 'maior que':
           return +planet[column] > +value;
@@ -87,15 +82,13 @@ function MainPage() {
           return planet[column] === value;
         }
       });
-      setFilterPlanets(newfilterPlanets);
     };
     const filterPlanetsByAllFilters = () => {
       if (filterByName.name !== '') {
-        const newfilterPlanets = planets
+        newfilterPlanets = planets
           .filter((planet) => planet.name.toLowerCase().includes(filterByName.name));
-        setFilterPlanets(newfilterPlanets);
       } else {
-        setFilterPlanets(planets);
+        newfilterPlanets = planets;
       }
       if (filterByNumericValues.length > 0) {
         filterByNumericValues.forEach(({ column, comparison, value }) => {
@@ -104,7 +97,8 @@ function MainPage() {
       }
     };
     filterPlanetsByAllFilters();
-  }, [filterByNumericValues, filterByName]);
+    setFilterPlanets(newfilterPlanets);
+  }, [filterByNumericValues, filterByName, planets]);
 
   const createOptionsElements = () => {
     let filteredSelectComparisonFilterArray = [];
