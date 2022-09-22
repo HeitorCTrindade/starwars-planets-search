@@ -7,7 +7,6 @@ function App() {
   return (
     <PlanetsProvider>
       <div>
-        Hello, App! 2
         <MainPage />
       </div>
     </PlanetsProvider>
