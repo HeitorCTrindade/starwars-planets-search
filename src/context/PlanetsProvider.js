@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import PlanetsContext from './PlanetsContext';
 
+const IS_SAME_STR = 0;
+
 function PlanetsProvider(props) {
   const { children } = props;
   const [planets, setPlanets] = useState([]);
@@ -34,6 +36,19 @@ function PlanetsProvider(props) {
     setNumericFilter([...filterByNumericValues, numericFilterj]);
   };
 
+  const removeOneNumericFilters = (filterToRemove) => {
+    if (filterToRemove.localeCompare('deleteAll') === IS_SAME_STR) {
+      setNumericFilter([]);
+    } else {
+      console.log(filterToRemove);
+      const newFilterByNumericValues = filterByNumericValues
+        .filter((filter) => (filterToRemove
+          .localeCompare(filter.column) !== IS_SAME_STR));
+      console.log(newFilterByNumericValues);
+      setNumericFilter(newFilterByNumericValues);
+    }
+  };
+
   return (
     <PlanetsContext.Provider
       value={ {
@@ -43,6 +58,7 @@ function PlanetsProvider(props) {
         filterByName,
         setNumericFilters,
         filterByNumericValues,
+        removeOneNumericFilters,
       } }
     >
       { children }
@@ -53,5 +69,7 @@ function PlanetsProvider(props) {
 export default PlanetsProvider;
 
 PlanetsProvider.propTypes = {
-  children: PropTypes.func.isRequired,
+  children: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+  }).isRequired,
 };

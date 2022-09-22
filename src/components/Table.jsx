@@ -42,6 +42,7 @@ export default function Table({ planets }) {
 
   return (
     <div>
+      <br />
       <table className="tg">
         <thead>
           <tr>

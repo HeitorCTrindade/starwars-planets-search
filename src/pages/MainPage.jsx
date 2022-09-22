@@ -18,6 +18,7 @@ function MainPage() {
     filterByName,
     setNumericFilters,
     filterByNumericValues,
+    removeOneNumericFilters,
   } = useContext(PlanetsContext);
 
   const [filterPlanets, setFilterPlanets] = useState([]);
@@ -29,29 +30,41 @@ function MainPage() {
     setFilterByName(newName);
   };
 
+  const handleRemoveFilterButton = (e) => {
+    const { name: filterToRemove } = e.target;
+    removeOneNumericFilters(filterToRemove);
+  };
+
   const creatFilterExibitionComponent = () => (
     <div>
       {
         filterByNumericValues.map(({ column, comparison, value }) => (
-          <>
-            <h5>
-              Filtro aplicado:
-              {column}
-              {' '}
-              {comparison}
-              {' '}
-              {value}
-              {' '}
-            </h5>
+          <h5 data-testid="filter" key={ column }>
+            Filtro aplicado:
+            {column}
+            {' '}
+            {comparison}
+            {' '}
+            {value}
+            {' '}
             <button
+              name={ column }
               type="button"
-              onClick={ () => console.log('fecha') }
+              onClick={ handleRemoveFilterButton }
             >
               remove
             </button>
-          </>
+          </h5>
         ))
       }
+      <button
+        name="deleteAll"
+        type="button"
+        data-testid="button-remove-filters"
+        onClick={ handleRemoveFilterButton }
+      >
+        Remover todos os filtros
+      </button>
     </div>
   );
 
@@ -101,15 +114,13 @@ function MainPage() {
   }, [filterByNumericValues, filterByName, planets]);
 
   const createOptionsElements = () => {
-    let filteredSelectComparisonFilterArray = [];
-    if (filterByNumericValues.length > 0) {
-      console.log('entrou');
-      filteredSelectComparisonFilterArray = selectComparisonFilterArray
-        .filter((option) => filterByNumericValues
-          .find((filter) => option !== filter.column));
-    } else {
-      filteredSelectComparisonFilterArray = selectComparisonFilterArray;
-    }
+    const filteredSelectComparisonFilterArray = selectComparisonFilterArray.slice();
+    filterByNumericValues.forEach(({ column }) => {
+      filteredSelectComparisonFilterArray
+        // https://www.mundojs.com.br/2018/09/06/removendo-elementos-de-uma-lista-array-javascript/
+        .splice(filteredSelectComparisonFilterArray.indexOf(column), 1);
+    });
+
     return (
       filteredSelectComparisonFilterArray.map((option) => (
         <option value={ option } key={ option }>{option}</option>
@@ -164,7 +175,6 @@ function MainPage() {
               Filtrar
             </button>
           </form>
-
           {filterByNumericValues.length > 0 && creatFilterExibitionComponent()}
           {filterPlanets.length
           === 0 ? <Table planets={ planets } /> : <Table planets={ filterPlanets } /> }
