@@ -9,6 +9,7 @@ function PlanetsProvider(props) {
   const [planets, setPlanets] = useState([]);
   const [filterByName, setName] = useState({ name: '' });
   const [filterByNumericValues, setNumericFilter] = useState([]);
+  const [order, setOrder] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const endpoint = 'https://swapi.dev/api/planets';
 
@@ -36,6 +37,10 @@ function PlanetsProvider(props) {
     setNumericFilter([...filterByNumericValues, numericFilterj]);
   };
 
+  const setOrderFilter = (orderObj) => {
+    setOrder(orderObj);
+  };
+
   const removeOneNumericFilters = (filterToRemove) => {
     if (filterToRemove.localeCompare('deleteAll') === IS_SAME_STR) {
       setNumericFilter([]);
@@ -59,6 +64,8 @@ function PlanetsProvider(props) {
         setNumericFilters,
         filterByNumericValues,
         removeOneNumericFilters,
+        order,
+        setOrderFilter,
       } }
     >
       { children }

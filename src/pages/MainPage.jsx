@@ -19,6 +19,8 @@ function MainPage() {
     setNumericFilters,
     filterByNumericValues,
     removeOneNumericFilters,
+    order,
+    setOrderFilter,
   } = useContext(PlanetsContext);
 
   const [filterPlanets, setFilterPlanets] = useState([]);
@@ -79,6 +81,15 @@ function MainPage() {
     e.target.valueFilter.value = '';
   };
 
+  const handleInputSortbyValues = (e) => {
+    e.preventDefault();
+    const sortFilter = {
+      column: e.target.column.value,
+      sort: e.target.columnSort.value,
+    };
+    setOrderFilter(sortFilter);
+  };
+
   useEffect(() => {
     let newfilterPlanets;
 
@@ -87,15 +98,14 @@ function MainPage() {
         switch (comparison) {
         case 'maior que':
           return +planet[column] > +value;
-
         case 'menor que':
           return +planet[column] < +value;
-
         default:
           return planet[column] === value;
         }
       });
     };
+
     const filterPlanetsByAllFilters = () => {
       if (filterByName.name !== '') {
         newfilterPlanets = planets
@@ -103,6 +113,7 @@ function MainPage() {
       } else {
         newfilterPlanets = planets;
       }
+
       if (filterByNumericValues.length > 0) {
         filterByNumericValues.forEach(({ column, comparison, value }) => {
           filterByValues(column, comparison, value);
@@ -112,6 +123,19 @@ function MainPage() {
     filterPlanetsByAllFilters();
     setFilterPlanets(newfilterPlanets);
   }, [filterByNumericValues, filterByName, planets]);
+
+  const sortByOrder = (array) => {
+    const { column, sort } = order;
+    if (column !== undefined && sort !== undefined) {
+      switch (sort) {
+      case 'ASC':
+        return array.sort((a, b) => (a[column] - b[column]));
+      default:
+        return array.sort((a, b) => (b[column] - a[column]));
+      }
+    }
+    return array;
+  };
 
   const createOptionsElements = () => {
     const filteredSelectComparisonFilterArray = selectComparisonFilterArray.slice();
@@ -132,7 +156,7 @@ function MainPage() {
     <div>
       { isLoading ? 'Carregando...' : (
         <div>
-          MainPage
+          Filtro por texto:
           <input
             type="text"
             value={ filterByName.name }
@@ -143,7 +167,6 @@ function MainPage() {
             <select
               data-testid="column-filter"
               name="column"
-              // value={ formState.column }
               onChange={ () => {} }
             >
               { createOptionsElements() }
@@ -152,7 +175,6 @@ function MainPage() {
             <select
               data-testid="comparison-filter"
               name="comparison"
-              // value={ formState.comparison }
               onChange={ () => {} }
             >
               <option value="maior que">maior que</option>
@@ -164,7 +186,6 @@ function MainPage() {
               type="number"
               name="valueFilter"
               data-testid="value-filter"
-              // value={ formState.value }
               defaultValue={ 0 }
               onChange={ () => {} }
             />
@@ -175,12 +196,52 @@ function MainPage() {
               Filtrar
             </button>
           </form>
+          <form onSubmit={ handleInputSortbyValues }>
+            <select
+              data-testid="column-sort"
+              name="column"
+              onChange={ () => {} }
+            >
+              { createOptionsElements() }
+            </select>
+
+            <label htmlFor="column-sort-input-asc">
+              <input
+                type="radio"
+                id="column-sort-input-asc"
+                name="columnSort"
+                data-testid="column-sort-input-asc"
+                defaultValue="ASC"
+                onChange={ () => {} }
+              />
+              Crescente
+            </label>
+
+            <label htmlFor="column-sort-input-desc">
+              <input
+                type="radio"
+                id="column-sort-input-desc"
+                name="columnSort"
+                data-testid="column-sort-input-desc"
+                defaultValue="DESC"
+                onChange={ () => {} }
+              />
+              Decrescente
+            </label>
+
+            <button
+              type="submit"
+              data-testid="column-sort-button"
+            >
+              Ordenar
+            </button>
+          </form>
           {filterByNumericValues.length > 0 && creatFilterExibitionComponent()}
           {filterPlanets.length
-          === 0 ? <Table planets={ planets } /> : <Table planets={ filterPlanets } /> }
+          === 0 ? <Table planets={ sortByOrder(planets) } />
+            : <Table planets={ sortByOrder(filterPlanets) } /> }
         </div>)}
     </div>
   );
 }
-
 export default MainPage;
