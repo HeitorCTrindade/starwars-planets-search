@@ -128,10 +128,13 @@ function MainPage() {
     const { column, sort } = order;
     if (column !== undefined && sort !== undefined) {
       switch (sort) {
+      case 'DESC':
+        return array.sort((a, b) => (+b[column] - +a[column]));
       case 'ASC':
-        return array.sort((a, b) => (a[column] - b[column]));
+        return array.sort((a, b) => (+b[column] - +a[column]))
+          .sort((a, b) => (+a[column] - +b[column]));
       default:
-        return array.sort((a, b) => (b[column] - a[column]));
+        return array;
       }
     }
     return array;

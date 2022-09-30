@@ -20,8 +20,13 @@ export default function Table({ planets }) {
         url,
       } = planet;
       return (
-        <tr key={ name } data-testid="planet-name">
-          <td className="tg-0lax">{ name }</td>
+        <tr key={ name }>
+          <td
+            className="tg-0lax"
+            data-testid="planet-name"
+          >
+            { name }
+          </td>
           <td className="tg-buh4">{ rotationPeriod }</td>
           <td className="tg-0lax">{ orbitalPeriod }</td>
           <td className="tg-buh4">{ diameter }</td>
