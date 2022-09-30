@@ -284,21 +284,24 @@ describe('Test Component "MainPage"', () => {
     expect(getListPlanets.length).toBe(1);
   });
 
-  // test('Se os filtros tem o funcionamento esperado', async () => {
-  //   global.fetch = jest.fn(async () => ({ json: async () => mockApiReturn }));
-  //   render(<App />);
-  //   await waitForPageLoads();
-  //   const valueInputNumber = screen.getByTestId('value-filter');
-  //   const btnFilterByValue = screen.getByTestId('button-filter');
-  //   const columFilterSelect = screen.getByTestId('column-filter');
-  //   const comparisonFilterSelect = screen.getByTestId('comparison-filter');
+  test('Se os filtros tem o funcionamento esperado', async () => {
+    global.fetch = jest.fn(async () => ({ json: async () => mockApiReturn }));
+    render(<App />);
+    await waitForPageLoads();
+    const valueInputNumber = screen.getByTestId('value-filter');
+    const btnFilterByValue = screen.getByTestId('button-filter');
+    const columFilterSelect = screen.getByTestId('column-filter');
+    const comparisonFilterSelect = screen.getByTestId('comparison-filter');
 
-  //   userEvent.type(valueInputNumber, 10000000);
-  //   userEvent.selectOptions(columFilterSelect, 'population');
-  //   userEvent.selectOptions(comparisonFilterSelect, 'igual a');
+    userEvent.type(valueInputNumber, '10000000');
+    userEvent.selectOptions(columFilterSelect, 'population');
+    userEvent.selectOptions(comparisonFilterSelect, 'igual a');
 
-  //   btnFilterByValue.click();
-  // });
+    btnFilterByValue.click();
+
+    let getListPlanets = screen.getAllByTestId('planet-name');
+    expect(getListPlanets.length).toBe(10);
+  });
 
   test('Se os filtros tem o funcionamento esperado', async () => {
     global.fetch = jest.fn(async () => ({ json: async () => mockApiReturn }));
@@ -307,9 +310,11 @@ describe('Test Component "MainPage"', () => {
     const btnFilterByValue = screen.getByTestId('column-sort-button');
     const columFilterSelect = screen.getByTestId('column-sort');
     const ascRadio = screen.getByTestId('column-sort-input-asc');
+    const descRadio = screen.getByTestId('column-sort-input-desc');
 
     userEvent.selectOptions(columFilterSelect, 'population');
     userEvent.click(ascRadio);
     userEvent.click(btnFilterByValue);
+    userEvent.click(descRadio);
   });
 });

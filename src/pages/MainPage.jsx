@@ -2,6 +2,11 @@ import React, { useContext, useState, useEffect } from 'react';
 import Table from '../components/Table';
 import PlanetsContext from '../context/PlanetsContext';
 
+const DEFULT_STATE_FORM = {
+  column: 'population',
+  comparison: 'maior que',
+  valueFilter: 0,
+};
 const selectComparisonFilterArray = [
   'population',
   'orbital_period',
@@ -9,7 +14,6 @@ const selectComparisonFilterArray = [
   'rotation_period',
   'surface_water',
 ];
-
 function MainPage() {
   const {
     planets,
@@ -22,21 +26,22 @@ function MainPage() {
     order,
     setOrderFilter,
   } = useContext(PlanetsContext);
-
   const [filterPlanets, setFilterPlanets] = useState([]);
-
   const handleInputTextFilter = (e) => {
     const newName = {
       name: e.target.value,
     };
     setFilterByName(newName);
   };
-
   const handleRemoveFilterButton = (e) => {
     const { name: filterToRemove } = e.target;
     removeOneNumericFilters(filterToRemove);
   };
-
+  const [formFilterSort, setFormFilterSort] = useState({
+    column: 'population',
+    columnSort: '',
+  });
+  const [formFilterValue, setFormFilterValue] = useState(DEFULT_STATE_FORM);
   const creatFilterExibitionComponent = () => (
     <div>
       {
@@ -44,11 +49,8 @@ function MainPage() {
           <h5 data-testid="filter" key={ column }>
             Filtro aplicado:
             {column}
-            {' '}
             {comparison}
-            {' '}
             {value}
-            {' '}
             <button
               name={ column }
               type="button"
@@ -69,30 +71,30 @@ function MainPage() {
       </button>
     </div>
   );
-
+  const handleChangesFormValue = (e) => {
+    const { name, value } = e.target;
+    setFormFilterValue({ ...formFilterValue, [name]: value });
+  };
   const handleInputFilterbyValues = (e) => {
     e.preventDefault();
     const newFilter = {
-      column: e.target.column.value,
-      comparison: e.target.comparison.value,
-      value: e.target.valueFilter.value,
+      column: formFilterValue.column,
+      comparison: formFilterValue.comparison,
+      value: formFilterValue.valueFilter,
     };
     setNumericFilters(newFilter);
-    e.target.valueFilter.value = '';
   };
-
+  const handleChangesForm = (e) => {
+    const { name, value } = e.target;
+    setFormFilterSort({ ...formFilterSort, [name]: value });
+  };
   const handleInputSortbyValues = (e) => {
     e.preventDefault();
-    const sortFilter = {
-      column: e.target.column.value,
-      sort: e.target.columnSort.value,
-    };
+    const sortFilter = { column: formFilterSort.column, sort: formFilterSort.columnSort };
     setOrderFilter(sortFilter);
   };
-
   useEffect(() => {
     let newfilterPlanets;
-
     const filterByValues = (column, comparison, value) => {
       newfilterPlanets = newfilterPlanets.filter((planet) => {
         switch (comparison) {
@@ -105,7 +107,6 @@ function MainPage() {
         }
       });
     };
-
     const filterPlanetsByAllFilters = () => {
       if (filterByName.name !== '') {
         newfilterPlanets = planets
@@ -122,8 +123,8 @@ function MainPage() {
     };
     filterPlanetsByAllFilters();
     setFilterPlanets(newfilterPlanets);
+    setFormFilterValue(DEFULT_STATE_FORM);
   }, [filterByNumericValues, filterByName, planets]);
-
   const sortByOrder = (array) => {
     const { column, sort } = order;
     if (column !== undefined && sort !== undefined) {
@@ -139,7 +140,6 @@ function MainPage() {
     }
     return array;
   };
-
   const createOptionsElements = () => {
     const filteredSelectComparisonFilterArray = selectComparisonFilterArray.slice();
     filterByNumericValues.forEach(({ column }) => {
@@ -147,7 +147,6 @@ function MainPage() {
         // https://www.mundojs.com.br/2018/09/06/removendo-elementos-de-uma-lista-array-javascript/
         .splice(filteredSelectComparisonFilterArray.indexOf(column), 1);
     });
-
     return (
       filteredSelectComparisonFilterArray.map((option) => (
         <option value={ option } key={ option }>{option}</option>
@@ -170,27 +169,25 @@ function MainPage() {
             <select
               data-testid="column-filter"
               name="column"
-              onChange={ () => {} }
+              onChange={ handleChangesFormValue }
             >
               { createOptionsElements() }
             </select>
-
             <select
               data-testid="comparison-filter"
               name="comparison"
-              onChange={ () => {} }
+              onChange={ handleChangesFormValue }
             >
               <option value="maior que">maior que</option>
               <option value="menor que">menor que</option>
               <option value="igual a">igual a</option>
             </select>
-
             <input
               type="number"
               name="valueFilter"
               data-testid="value-filter"
               defaultValue={ 0 }
-              onChange={ () => {} }
+              onChange={ handleChangesFormValue }
             />
             <button
               type="submit"
@@ -203,11 +200,14 @@ function MainPage() {
             <select
               data-testid="column-sort"
               name="column"
-              onChange={ () => {} }
+              onChange={ handleChangesForm }
             >
-              { createOptionsElements() }
+              <option value="population">population</option>
+              <option value="orbital_period">orbital_period</option>
+              <option value="diameter">diameter</option>
+              <option value="rotation_period">rotation_period</option>
+              <option value="surface_water">surface_water</option>
             </select>
-
             <label htmlFor="column-sort-input-asc">
               <input
                 type="radio"
@@ -215,11 +215,10 @@ function MainPage() {
                 name="columnSort"
                 data-testid="column-sort-input-asc"
                 defaultValue="ASC"
-                onChange={ () => {} }
+                onChange={ handleChangesForm }
               />
               Crescente
             </label>
-
             <label htmlFor="column-sort-input-desc">
               <input
                 type="radio"
@@ -227,7 +226,7 @@ function MainPage() {
                 name="columnSort"
                 data-testid="column-sort-input-desc"
                 defaultValue="DESC"
-                onChange={ () => {} }
+                onChange={ handleChangesForm }
               />
               Decrescente
             </label>
