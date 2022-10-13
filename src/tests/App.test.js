@@ -301,9 +301,13 @@ describe('Test Component "MainPage"', () => {
 
     let getListPlanets = screen.getAllByTestId('planet-name');
     expect(getListPlanets.length).toBe(10);
+
+    const removeButton = screen.getByTestId('filter-button-population-remove');
+    removeButton.click();
+    expect(getListPlanets.length).toBe(10);
   });
 
-  test('Se os filtros tem o funcionamento esperado', async () => {
+  test('Se os filtros de ordenamento tem o funcionamento esperado', async () => {
     global.fetch = jest.fn(async () => ({ json: async () => mockApiReturn }));
     render(<App />);
     await waitForPageLoads();
@@ -316,5 +320,47 @@ describe('Test Component "MainPage"', () => {
     userEvent.click(ascRadio);
     userEvent.click(btnFilterByValue);
     userEvent.click(descRadio);
+    userEvent.click(btnFilterByValue);
+  });
+
+  test('Se os filtros de ordenamento tem o funcionamento esperado quando nada é selecionado', async () => {
+    global.fetch = jest.fn(async () => ({ json: async () => mockApiReturn }));
+    render(<App />);
+    await waitForPageLoads();
+    const btnFilterByValue = screen.getByTestId('column-sort-button');
+    userEvent.click(btnFilterByValue);
+    let getListPlanets = screen.getAllByTestId('planet-name');
+    expect(getListPlanets.length).toBe(10);
+  });
+
+  test('Se os filtros Maior que e Menor que tem o funcionamento esperado', async () => {
+    global.fetch = jest.fn(async () => ({ json: async () => mockApiReturn }));
+    render(<App />);
+    await waitForPageLoads();
+    const valueInputNumber = screen.getByTestId('value-filter');
+    let btnFilterByValue = screen.getByTestId('button-filter');
+    const columFilterSelect = screen.getByTestId('column-filter');
+    const comparisonFilterSelect = screen.getByTestId('comparison-filter');
+
+
+    userEvent.type(valueInputNumber, '369');
+    userEvent.selectOptions(columFilterSelect, 'orbital_period');
+    userEvent.selectOptions(comparisonFilterSelect, 'menor que');
+
+    btnFilterByValue.click();
+
+    userEvent.type(valueInputNumber, '10000000');
+    userEvent.selectOptions(columFilterSelect, 'population');
+    userEvent.selectOptions(comparisonFilterSelect, 'maior que');
+
+    btnFilterByValue = screen.getByTestId('button-filter');
+    btnFilterByValue.click();
+
+    let getListPlanets = screen.getAllByTestId('planet-name');
+    expect(getListPlanets.length).toBe(5);
+
+    const removeButton = screen.getByTestId('button-remove-filters');
+    removeButton.click();
+    expect(getListPlanets.length).toBe(5);
   });
 });

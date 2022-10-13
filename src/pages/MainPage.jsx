@@ -54,6 +54,7 @@ function MainPage() {
             <button
               name={ column }
               type="button"
+              data-testid={ `filter-button-${column}-remove` }
               onClick={ handleRemoveFilterButton }
             >
               remove
